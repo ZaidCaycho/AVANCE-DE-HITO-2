@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Árbol de Quina: Registro de Ingresos y Egresos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa; /* Fondo gris claro */
+            color: #333333; /* Letra gris oscuro */
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Centra el contenido horizontalmente */
+            padding: 20px;
+            background-color: #343a40; /* Gris oscuro */
+            color: #ffffff; /* Letra blanca */
+            position: relative;
+        }
+        .header img {
+            width: 120px; /* Tamaño ajustado */
+            height: 120px; /* Tamaño ajustado */
+            border-radius: 50%;
+            border: 3px solid #ffc107; /* Borde amarillo dorado */
+            object-fit: cover; /* Ajusta la imagen dentro del contenedor */
+            margin-right: 20px; /* Espacio entre el logo y el título */
+        }
+        h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 2em; /* Tamaño ajustado */
+            color: #ffc107; /* Amarillo dorado */
+            margin: 0; /* Eliminar márgenes para alineación */
+        }
+        nav {
+            margin: 20px auto;
+            background-color: #ffffff; /* Fondo blanco */
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 900px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        nav a {
+            color: #343a40; /* Gris oscuro */
+            text-decoration: none;
+            font-size: 1em;
+            padding: 10px 20px;
+            transition: color 0.3s, background-color 0.3s;
+        }
+        nav a:hover {
+            color: #ffffff; /* Letra blanca */
+            background-color: #ffc107; /* Amarillo dorado */
+            border-radius: 5px;
+        }
+        .container {
+            padding: 40px;
+            background-color: #ffffff; /* Fondo blanco */
+            margin: 20px auto;
+            max-width: 900px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Ajuste del estilo */
+        }
+        h2 {
+            font-size: 2em;
+            color: #343a40; /* Gris oscuro */
+            margin-bottom: 20px;
+        }
+        .registro-form {
+            margin-bottom: 20px;
+        }
+        .registro-form input {
+            margin-bottom: 10px;
+        }
+        .resumen-semanal {
+            background-color: #e2e3e5; /* Fondo gris claro */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .resumen-semanal h3 {
+            color: #343a40; /* Gris oscuro */
+        }
+        .alerta {
+            display: none;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #d4edda; /* Fondo verde claro */
+            color: #155724; /* Texto verde oscuro */
+            border: 1px solid #c3e6cb; /* Borde verde claro */
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="img/árbol de quina 120x120.png" alt="Logo">
+        <div>
+            <h1>El Árbol de Quina: Registro de Ingresos y Egresos</h1>
+        </div>
+    </div>
+    <nav>
+        <a href="inicio.html">Inicio</a>
+        <a href="registro de productos para la wed">Registro de productos</a>
+        <a href="registro de ingresos y egresos de la empresa.html">Registrar de ingresos y egresos</a>
+        <a href="ver informes totales semanales de usuario y empresa.html">Ver Informes</a>
+        <a href="inscribirse.html">Inscribirse</a>
+        <a href="Pagina wed (visita).html">Visita</a>
+    </nav>
+    <div class="container">
+        <section>
+            <h2>Registro de Ingresos y Egresos</h2>
+            <form class="registro-form" id="registroForm">
+                <div class="mb-3">
+                    <label for="fecha" class="form-label">Fecha</label>
+                    <input type="date" class="form-control" id="fecha" required>
+                </div>
+                <div class="mb-3">
+                    <label for="tipo" class="form-label">Tipo</label>
+                    <select class="form-control" id="tipo" required>
+                        <option value="ingreso">Ingreso</option>
+                        <option value="egreso">Egreso</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="monto" class="form-label">Monto</label>
+                    <input type="number" class="form-control" id="monto" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Agregar</button>
+            </form>
+            <div class="alerta" id="bienvenidaMensaje">
+                ¡Registro exitoso! Ahora puedes ver tu resumen semanal.
+            </div>
+        </section>
+        <section class="resumen-semanal">
+            <h2>Resumen Semanal</h2>
+            <div id="resumenContenedor"></div>
+        </section>
+    </div>
+
+    <script>
+        document.getElementById('registroForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const fecha = document.getElementById('fecha').value;
+            const tipo = document.getElementById('tipo').value;
+            const monto = parseFloat(document.getElementById('monto').value);
+
+            // Almacenar los datos en localStorage
+            const registros = JSON.parse(localStorage.getItem('registros')) || [];
+            registros.push({ fecha, tipo, monto });
+            localStorage.setItem('registros', JSON.stringify(registros));
+
+            // Mostrar mensaje de bienvenida
+            document.getElementById('bienvenidaMensaje').style.display = 'block';
+            // Limpiar el formulario
+            document.getElementById('registroForm').reset();
+
+            // Actualizar el resumen semanal
+            actualizarResumenSemanal();
+        });
+
+        function actualizarResumenSemanal() {
+            const registros = JSON.parse(localStorage.getItem('registros')) || [];
+            const resumenContenedor = document.getElementById('resumenContenedor');
+            resumenContenedor.innerHTML = '';
+
+            // Agrupar registros por semana
+            const registrosPorSemana = agruparRegistrosPorSemana(registros);
+
+            // Calcular resumen semanal
+            for (const [semana, registros] of Object.entries(registrosPorSemana)) {
+                const totalIngresos = registros.filter(r => r.tipo === 'ingreso').reduce((sum, r) => sum + r.monto, 0);
+                const totalEgresos = registros.filter(r => r.tipo === 'egreso').reduce((sum, r) => sum + r.monto, 0);
+                const balance = totalIngresos - totalEgresos;
+
+                const resumenHTML = `
+                    <div class="mb-4">
+                        <h3>Semana ${semana}</h3>
+                        <p><strong>Ingresos:</strong> S/. ${totalIngresos.toFixed(2)}</p>
+                        <p><strong>Egresos:</strong> S/. ${totalEgresos.toFixed(2)}</p>
+                        <p><strong>Balance:</strong> S/. ${balance.toFixed(2)}</p>
+                    </div>
+                `;
+                resumenContenedor.innerHTML += resumenHTML;
+            }
+        }
+
+        function agruparRegistrosPorSemana(registros) {
+            const registrosPorSemana = {};
+
+            registros.forEach(registro => {
+                const fecha = new Date(registro.fecha);
+                const semana = obtenerSemanaDelAno(fecha);
+                
+                if (!registrosPorSemana[semana]) {
+                    registrosPorSemana[semana] = [];
+                }
+                registrosPorSemana[semana].push(registro);
+            });
+
+            return registrosPorSemana;
+        }
+        function obtenerSemanaDelAno(fecha) {
+            // Copiar la fecha para evitar modificar la original
+            const inicioAno = new Date(fecha.getFullYear(), 0, 1);
+            const diasTranscurridos = Math.floor((fecha - inicioAno) / (1000 * 60 * 60 * 24));
+            // Calcular la semana del año (basado en el número de días transcurridos)
+            return Math.ceil((diasTranscurridos + 1) / 7);
+        }
+    </script>
+</body>
+</html>
+
+
+    
+
+
+            
